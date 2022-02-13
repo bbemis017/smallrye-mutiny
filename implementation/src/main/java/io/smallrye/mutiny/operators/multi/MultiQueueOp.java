@@ -28,6 +28,11 @@ public class MultiQueueOp<T> extends AbstractMultiOperator<T, T> implements  Sub
      */
     private MultiQueueOpSubscription<T> multiQueueOpSubscription;
 
+    /**
+     * {@code true} if the multiQueueOp's upstream has completed.
+     */
+    private boolean upstreamIsComplete; // TODO: https://www.geeksforgeeks.org/volatile-keyword-in-java/#:~:text=For%20Java%2C%20%E2%80%9Cvolatile%E2%80%9D%20tells,scope%20of%20the%20program%20itself.
+
 
     /**
      * =========================================================================
@@ -79,7 +84,10 @@ public class MultiQueueOp<T> extends AbstractMultiOperator<T, T> implements  Sub
 
     @Override
     public void onComplete() {
-
+        System.out.println("MultiQueueOp#onComplete start");
+        this.upstreamIsComplete = true;
+        this.multiQueueOpSubscription.sendCompletion();
+        System.out.println("MultiQueueOp#onComplete end");
     }
 
 
@@ -110,8 +118,19 @@ public class MultiQueueOp<T> extends AbstractMultiOperator<T, T> implements  Sub
             this.multiQueueOp.upstreamSubscription.request(l);
         }
 
+        public void sendCompletion() {
+            if (this.multiQueueOp.upstreamIsComplete) {
+                System.out.println("MultiQueueOpSubscription#sendCompletion completion");
+                this.downstreamSubscriber.onCompletion();
+            }
+        }
+
         public void send(T item) {
-            downstreamSubscriber.onItem(item);
+            System.out.println("MultiQueueOpSubscription#send start");
+
+            this.downstreamSubscriber.onItem(item);
+
+            System.out.println("MultiQueueOpSubscription#send end");
         }
 
         @Override
