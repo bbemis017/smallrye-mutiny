@@ -60,6 +60,10 @@ public class MultiQueueOp<T> extends AbstractMultiOperator<T, T> implements  Sub
     @Override
     public void subscribe(MultiSubscriber<? super T> downstreamSubscriber) {
         // this is called when the downstream subscribes to the MultiQueueOp
+        if (this.multiQueueOpSubscription != null){
+            downstreamSubscriber.onError(new Exception("MultiQueueOp does not support more than 1 subscriber"));
+            return;
+        }
 
         // The downstream of the MultiQueueOp subscribes to the MultiQueueOpSubscription
         MultiQueueOpSubscription<T> multiQueueOpSubscription = new MultiQueueOpSubscription<>(downstreamSubscriber, this);

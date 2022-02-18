@@ -52,8 +52,12 @@ public class MultiQueueTest {
         multi.subscribe().withSubscriber(AssertSubscriber.create())
                 .assertSubscribed();
 
-        Assertions.assertThrows(Exception.class, () -> multi.subscribe().withSubscriber(AssertSubscriber.create()).assertSubscribed());
-    }
+        Throwable failure = multi.subscribe()
+                .withSubscriber(AssertSubscriber.create())
+                .awaitFailure()
+                .getFailure();
+        Assertions.assertNotNull(failure);
+ }
 
     //TODO can I test for race conditions?
 
