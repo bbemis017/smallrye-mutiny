@@ -207,7 +207,12 @@ public class MultiQueueOp<T> extends AbstractMultiOperator<T, T> implements  Sub
 
         @Override
         public void cancel() {
-
+            // remove requests if there are any
+            if (this.requestedItems.getAndSet(Long.MIN_VALUE) != Long.MIN_VALUE) {
+                // If there are active requests remove the multiQueueOpSubscription from the MultiQueueOp
+                this.multiQueueOp.upstreamSubscription.cancel();
+                this.multiQueueOp.multiQueueOpSubscription = null;
+            }
         }
     }
 }
