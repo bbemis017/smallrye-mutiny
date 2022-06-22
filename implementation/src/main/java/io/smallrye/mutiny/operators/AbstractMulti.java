@@ -80,6 +80,12 @@ public abstract class AbstractMulti<T> implements Multi<T> {
     }
 
     @Override
+    public Multi<T> queue(final int maxQueuedRequests) {
+        // TODO bbemis update this
+        return Infrastructure.onMultiCreation(new MultiCacheOp<>(this));
+    }
+
+    @Override
     public Multi<T> emitOn(Executor executor) {
         return Infrastructure.onMultiCreation(new MultiEmitOnOp<>(this, nonNull(executor, "executor")));
     }

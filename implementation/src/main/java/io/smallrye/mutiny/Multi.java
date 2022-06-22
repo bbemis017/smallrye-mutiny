@@ -204,6 +204,16 @@ public interface Multi<T> extends Publisher<T> {
     Multi<T> cache();
 
     /**
+     * Creates a new {@link Multi} that subscribes to this upstream and requests maxQueuedRequests from the upstream. The events emitted by the upstream are then queued, whenever the downstream consumes an event from the queue new requests are issued to the upstream in order to refill the queue.
+     *
+     * TODO bbemis revise this description
+     *
+     * @param maxQueuedRequests - max Number of events to store at one time.
+     * @return a multi that queues events from the upstream.
+     */
+    Multi<T> queue(final int maxQueuedRequests);
+
+    /**
      * Produces {@link Uni} collecting/aggregating items from this {@link Multi}.
      * It allows accumulating the items emitted by this {@code multi} into a structure such as a into a
      * {@link java.util.List} ({@link MultiCollect#asList()}), a {@link java.util.Map}
